@@ -124,6 +124,8 @@ export default function Home() {
   const [showHeizdraehte, setShowHeizdraehte] = useState(false);
   // Messung
   const [showMessungDialog, setShowMessungDialog] = useState(false);
+  const [showSchliffchenWarning, setShowSchliffchenWarning] = useState(false);
+  const [showCryoWarning, setShowCryoWarning] = useState(false);
   const [messungCount, setMessungCount] = useState(0);
   const [messungDateiname, setMessungDateiname] = useState("");
   const [messungAmplitude, setMessungAmplitude] = useState("");
@@ -376,15 +378,25 @@ export default function Home() {
       const currentState = valveStates[valveId];
       const newState = !currentState;
 
+      // V24 and V25 are linked, V23 and V26 are linked
+      const group1 = ["V24", "V25"];
+      const group2 = ["V23", "V26"];
+
       setValveStates((prev) => {
         const updated = { ...prev };
-        THREE_HEADED_VALVES.forEach((v) => {
-          updated[v.id] = newState;
-        });
+        if (group1.includes(valveId)) {
+          group1.forEach((id) => { updated[id] = newState; });
+        } else if (group2.includes(valveId)) {
+          group2.forEach((id) => { updated[id] = newState; });
+        }
         return updated;
       });
 
-      addLog("Turbo", newState ? "in" : "out", newState ? "IN" : "OUT");
+      if (group1.includes(valveId)) {
+        addLog("Turbo Cryo", newState ? "in" : "out", newState ? "IN" : "OUT");
+      } else {
+        addLog("Turbo", newState ? "in" : "out", newState ? "IN" : "OUT");
+      }
       return;
     }
 
@@ -616,11 +628,27 @@ export default function Home() {
 
   const toggleProbePosition = () => {
     const newPos = probePosition === "cryo" ? "schleuse" : "cryo";
+    // Warn if trying to go to cryo while cryoDirection is spektrometer
+    if (newPos === "cryo" && cryoDirection === "spektrometer") {
+      setShowSchliffchenWarning(true);
+      return;
+    }
+    executeProbeToggle(newPos);
+  };
+
+  const executeProbeToggle = (newPos: "cryo" | "schleuse") => {
     setProbePosition(newPos);
-    addLog(newPos === "cryo" ? "Schliffchen" : "Schliffchen", newPos === "cryo" ? "in Cryo" : "in Schleuse");
+    addLog("Schliffchen", newPos === "cryo" ? "in Cryo" : "in Schleuse");
     // Only ask about TEC restart if TEC is on
     if (tecOn) {
       setShowTecDialog(true);
+    }
+  };
+
+  const handleSchliffchenWarning = (proceed: boolean) => {
+    setShowSchliffchenWarning(false);
+    if (proceed) {
+      executeProbeToggle("cryo");
     }
   };
 
@@ -721,8 +749,24 @@ export default function Home() {
 
   const toggleCryoDirection = () => {
     const newDir = cryoDirection === "spektrometer" ? "schleuse" : "spektrometer";
+    // Warn if trying to go to spektrometer while probe is in cryo
+    if (newDir === "spektrometer" && probePosition === "cryo") {
+      setShowCryoWarning(true);
+      return;
+    }
+    executeCryoToggle(newDir);
+  };
+
+  const executeCryoToggle = (newDir: "spektrometer" | "schleuse") => {
     setCryoDirection(newDir);
     addLog("Cryo", newDir === "spektrometer" ? "Zum Spektrometer" : "Zur Schleuse");
+  };
+
+  const handleCryoWarning = (proceed: boolean) => {
+    setShowCryoWarning(false);
+    if (proceed) {
+      executeCryoToggle("spektrometer");
+    }
   };
 
   const toggleSpektrometerState = () => {
@@ -931,6 +975,22 @@ export default function Home() {
             >
               {mfcOn ? "MFC on" : "MFC off"}
             </button>
+            {mfcOn && (
+              <div className="flex items-center gap-2">
+                <input
+                  type="number"
+                  value={mfcValue}
+                  onChange={(e) => setMfcValue(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      handleMfcValueSubmit(mfcValue);
+                    }
+                  }}
+                  placeholder="0"
+                  className="flex-1 px-2 py-1 text-xs border rounded"
+                />
+              </div>
+            )}
             <button
               onClick={toggleHeater}
               className={`w-full px-3 py-2 rounded text-sm font-medium transition-colors ${
@@ -1079,32 +1139,6 @@ export default function Home() {
               onContextMenu={handleSvgContextMenu}
               dangerouslySetInnerHTML={{ __html: processedSvgContent }}
             />
-            {/* MFC Value Input - positioned above MFC rectangle */}
-            {mfcOn && (
-              <div
-                style={{
-                  position: "absolute",
-                  left: "480px",
-                  top: "618px",
-                  transform: "translate(-50%, 0)",
-                }}
-              >
-                <input
-                  type="number"
-                  value={mfcValue}
-                  onChange={(e) => setMfcValue(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      handleMfcValueSubmit(mfcValue);
-                    }
-                  }}
-                  onClick={(e) => e.stopPropagation()}
-                  onMouseDown={(e) => e.stopPropagation()}
-                  placeholder="0"
-                  className="w-12 h-5 text-center text-xs border border-blue-500 rounded bg-white shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-400"
-                />
-              </div>
-            )}
           </div>
         </div>
         </div>
@@ -1153,6 +1187,54 @@ export default function Home() {
                   className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded"
                 >
                   Ja
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Schliffchen Warning Dialog */}
+        {showSchliffchenWarning && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg shadow-xl p-6 max-w-sm">
+              <h3 className="text-lg font-semibold text-gray-800 mb-2">Warnung</h3>
+              <p className="text-gray-600 mb-4">Cryo ist zum Spektrometer gerichtet. Wirklich fortfahren?</p>
+              <div className="flex gap-3 justify-end">
+                <button
+                  onClick={() => handleSchliffchenWarning(false)}
+                  className="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded text-gray-700"
+                >
+                  Abbrechen
+                </button>
+                <button
+                  onClick={() => handleSchliffchenWarning(true)}
+                  className="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded"
+                >
+                  Fortfahren
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Cryo Direction Warning Dialog */}
+        {showCryoWarning && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg shadow-xl p-6 max-w-sm">
+              <h3 className="text-lg font-semibold text-gray-800 mb-2">Warnung</h3>
+              <p className="text-gray-600 mb-4">Schliffchen ist im Cryo. Wirklich fortfahren?</p>
+              <div className="flex gap-3 justify-end">
+                <button
+                  onClick={() => handleCryoWarning(false)}
+                  className="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded text-gray-700"
+                >
+                  Abbrechen
+                </button>
+                <button
+                  onClick={() => handleCryoWarning(true)}
+                  className="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded"
+                >
+                  Fortfahren
                 </button>
               </div>
             </div>

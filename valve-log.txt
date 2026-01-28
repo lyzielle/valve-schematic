@@ -1,0 +1,57 @@
+[2026-01-27T17:39:19.578Z] System: Logs cleared
+[2026-01-27T17:39:40.981Z] Turbo: in (IN)
+[2026-01-27T17:39:44.726Z] Turbo: out (OUT)
+[2026-01-27T17:41:11.184Z] Cryo: OFF (OFF)
+[2026-01-27T17:41:12.788Z] Cryo: ON (ON)
+[2026-01-27T17:42:56.718Z] System: Closed all valves (4) (CLOSED)
+[2026-01-27T17:46:29.030Z] System: Schematic loaded
+[2026-01-27T17:46:40.651Z] System: Schematic loaded
+[2026-01-27T17:50:14.674Z] System: Schematic loaded
+[2026-01-27T17:50:51.933Z] T1: 1.0e-2 mbar
+[2026-01-27T17:52:32.521Z] System: Schematic loaded
+[2026-01-27T17:53:51.483Z] T1: 6 × 10⁻³ mbar
+[2026-01-27T17:54:00.882Z] T1: 6 × 10⁻³ mbar
+[2026-01-28T21:13:24.112Z] System: Schematic loaded
+[2026-01-28T21:13:25.743Z] MFC: ON (ON)
+[2026-01-28T21:13:28.403Z] MFC: OFF (OFF)
+[2026-01-28T21:13:47.337Z] Schliffchen: in Schleuse
+[2026-01-28T21:15:16.278Z] Schliffchen: in Cryo
+[2026-01-28T21:17:53.834Z] System: Schematic loaded
+[2026-01-28T21:18:19.734Z] System: Schematic loaded
+[2026-01-28T21:18:55.272Z] System: Schematic loaded
+[2026-01-28T21:19:42.425Z] Schliffchen: in Schleuse
+[2026-01-28T21:26:35.437Z] System: Schematic loaded
+[2026-01-28T21:27:11.327Z] System: Schematic loaded
+[2026-01-28T21:27:30.177Z] System: Schematic loaded
+[2026-01-28T21:30:55.828Z] TEC: ON (ON)
+[2026-01-28T21:31:06.239Z] System: Schematic loaded
+[2026-01-28T21:31:33.824Z] Turbo (V24/V25): in (IN)
+[2026-01-28T21:31:39.328Z] Turbo (V23/V26): in (IN)
+[2026-01-28T21:31:50.944Z] Turbo (V23/V26): out (OUT)
+[2026-01-28T21:31:51.295Z] Turbo (V23/V26): in (IN)
+[2026-01-28T21:32:06.434Z] Turbo (V24/V25): out (OUT)
+[2026-01-28T21:33:32.963Z] System: Schematic loaded
+[2026-01-28T21:33:57.654Z] Turbo: out (OUT)
+[2026-01-28T21:33:59.385Z] Turbo: in (IN)
+[2026-01-28T21:34:00.770Z] Turbo Cryo: in (IN)
+[2026-01-28T21:34:01.444Z] Turbo Cryo: out (OUT)
+[2026-01-28T21:34:05.488Z] Turbo Cryo: in (IN)
+[2026-01-28T21:34:27.064Z] TEC: OFF (OFF)
+[2026-01-28T21:34:49.943Z] MFC: ON (ON)
+[2026-01-28T21:34:50.967Z] MFC: OFF (OFF)
+[2026-01-28T21:35:01.232Z] HV: OFF (OFF)
+[2026-01-28T21:35:02.059Z] HV: ON (ON)
+[2026-01-28T21:35:02.676Z] Cryo Heater: ON (ON)
+[2026-01-28T21:35:03.335Z] Cryo Heater: OFF (OFF)
+[2026-01-28T21:35:04.132Z] Cryo Heater: ON (ON)
+[2026-01-28T21:35:04.598Z] Cryo Heater: OFF (OFF)
+[2026-01-28T21:35:05.730Z] MFC: ON (ON)
+[2026-01-28T21:35:06.314Z] MFC: OFF (OFF)
+[2026-01-28T21:35:07.048Z] Kühlfalle: nein
+[2026-01-28T21:35:07.412Z] Kühlfalle: ja
+[2026-01-28T21:35:08.016Z] TEC: ON (ON)
+[2026-01-28T21:35:08.468Z] TEC: OFF (OFF)
+[2026-01-28T21:35:09.732Z] Spektrometer: Leer
+[2026-01-28T21:35:10.446Z] Spektrometer: N2 befüllt
+[2026-01-28T21:35:11.949Z] Cryo: Zur Schleuse
+[2026-01-28T21:35:12.526Z] Cryo: Zum Spektrometer
