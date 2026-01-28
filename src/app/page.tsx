@@ -104,8 +104,12 @@ export default function Home() {
   // Cryo temperatures
   const [cryoTemp1, setCryoTemp1] = useState("");
   const [cryoTemp2, setCryoTemp2] = useState("");
-  // TEC temperature
+  // TEC settings
   const [tecTemp, setTecTemp] = useState("");
+  const [tecTempMin, setTecTempMin] = useState("");
+  const [tecTempMax, setTecTempMax] = useState("");
+  const [tecRamp, setTecRamp] = useState("");
+  const [tecProximity, setTecProximity] = useState("");
   // Pressure sensors (mbar)
   const [pressureCH1, setPressureCH1] = useState("");
   const [pressureCH2, setPressureCH2] = useState("");
@@ -126,6 +130,7 @@ export default function Home() {
   const [showMessungDialog, setShowMessungDialog] = useState(false);
   const [showSchliffchenWarning, setShowSchliffchenWarning] = useState(false);
   const [showCryoWarning, setShowCryoWarning] = useState(false);
+  const [showHvWarning, setShowHvWarning] = useState(false);
   const [messungCount, setMessungCount] = useState(0);
   const [messungDateiname, setMessungDateiname] = useState("");
   const [messungAmplitude, setMessungAmplitude] = useState("");
@@ -162,6 +167,10 @@ export default function Home() {
         if (state.cryoTemp1 !== undefined) setCryoTemp1(state.cryoTemp1);
         if (state.cryoTemp2 !== undefined) setCryoTemp2(state.cryoTemp2);
         if (state.tecTemp !== undefined) setTecTemp(state.tecTemp);
+        if (state.tecTempMin !== undefined) setTecTempMin(state.tecTempMin);
+        if (state.tecTempMax !== undefined) setTecTempMax(state.tecTempMax);
+        if (state.tecRamp !== undefined) setTecRamp(state.tecRamp);
+        if (state.tecProximity !== undefined) setTecProximity(state.tecProximity);
         if (state.pressureCH1 !== undefined) setPressureCH1(state.pressureCH1);
         if (state.pressureCH2 !== undefined) setPressureCH2(state.pressureCH2);
         if (state.pressureT1 !== undefined) setPressureT1(state.pressureT1);
@@ -213,6 +222,10 @@ export default function Home() {
       cryoTemp1,
       cryoTemp2,
       tecTemp,
+      tecTempMin,
+      tecTempMax,
+      tecRamp,
+      tecProximity,
       pressureCH1,
       pressureCH2,
       pressureT1,
@@ -234,7 +247,7 @@ export default function Home() {
       logs,
     };
     localStorage.setItem("valve-schematic-state", JSON.stringify(state));
-  }, [isLoaded, valveStates, probePosition, cryoDirection, spektrometerState, activeGasSource, tecOn, kuehlfalle, mfcOn, mfcValue, cryoOn, heaterOn, hvOn, heaterTemp1, cryoTemp1, cryoTemp2, tecTemp, pressureCH1, pressureCH2, pressureT1, pressureT2, pressureT3, pressureT4, pressureT5, heizdraehteFlow, heizdraehteTank, heizdraehtePumpe, heizdraehteMischProben, heizdraehteMischAbsaug, heizdraehteAbpump, leftSidebarWidth, rightSidebarWidth, messungCount, showHeizdraehte, showPipeLabels, logs]);
+  }, [isLoaded, valveStates, probePosition, cryoDirection, spektrometerState, activeGasSource, tecOn, kuehlfalle, mfcOn, mfcValue, cryoOn, heaterOn, hvOn, heaterTemp1, cryoTemp1, cryoTemp2, tecTemp, tecTempMin, tecTempMax, tecRamp, tecProximity, pressureCH1, pressureCH2, pressureT1, pressureT2, pressureT3, pressureT4, pressureT5, heizdraehteFlow, heizdraehteTank, heizdraehtePumpe, heizdraehteMischProben, heizdraehteMischAbsaug, heizdraehteAbpump, leftSidebarWidth, rightSidebarWidth, messungCount, showHeizdraehte, showPipeLabels, logs]);
 
   const addLog = useCallback((component: string, action: string, state?: string) => {
     const timestamp = new Date();
@@ -859,7 +872,7 @@ export default function Home() {
 
             {/* Messung Button */}
             <button
-              onClick={() => setShowMessungDialog(true)}
+              onClick={() => hvOn ? setShowHvWarning(true) : setShowMessungDialog(true)}
               className="w-full px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm font-medium"
             >
               Messung
@@ -943,16 +956,57 @@ export default function Home() {
               {tecOn ? "TEC on" : "TEC off"}
             </button>
             {tecOn && (
-              <div className="flex items-center gap-2">
-                <input
-                  type="number"
-                  value={tecTemp}
-                  onChange={(e) => setTecTemp(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && logTemperature("TEC Temp", tecTemp, "°C")}
-                  placeholder="Temp"
-                  className="flex-1 px-2 py-1 text-xs border rounded"
-                />
-                <span className="text-xs text-gray-500">°C</span>
+              <div className="flex flex-col gap-2 text-xs">
+                <div className="flex flex-col gap-1">
+                  <div className="flex items-center gap-1">
+                    <span className="text-gray-500 w-16">Start:</span>
+                    <input
+                      type="number"
+                      value={tecTempMin}
+                      onChange={(e) => setTecTempMin(e.target.value)}
+                      onKeyDown={(e) => e.key === "Enter" && logTemperature("TEC Starting Temp", tecTempMin, "°C")}
+                      placeholder="Start"
+                      className="flex-1 px-1 py-1 border rounded"
+                    />
+                    <span className="text-gray-500">°C</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <span className="text-gray-500 w-16">Target:</span>
+                    <input
+                      type="number"
+                      value={tecTempMax}
+                      onChange={(e) => setTecTempMax(e.target.value)}
+                      onKeyDown={(e) => e.key === "Enter" && logTemperature("TEC Target Temp", tecTempMax, "°C")}
+                      placeholder="Target"
+                      className="flex-1 px-1 py-1 border rounded"
+                    />
+                    <span className="text-gray-500">°C</span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="text-gray-500 w-16">Ramp:</span>
+                  <input
+                    type="number"
+                    value={tecRamp}
+                    onChange={(e) => setTecRamp(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && logTemperature("TEC Ramp", tecRamp, "°C/s")}
+                    placeholder="0"
+                    className="flex-1 px-1 py-1 border rounded"
+                  />
+                  <span className="text-gray-500">°C/s</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="text-gray-500 w-16">Proximity:</span>
+                  <input
+                    type="number"
+                    value={tecProximity}
+                    onChange={(e) => setTecProximity(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && logTemperature("TEC Proximity", tecProximity, "°C")}
+                    placeholder="0"
+                    className="flex-1 px-1 py-1 border rounded"
+                  />
+                  <span className="text-gray-500">°C</span>
+                </div>
               </div>
             )}
             <button
@@ -1235,6 +1289,30 @@ export default function Home() {
                   className="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded"
                 >
                   Fortfahren
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* HV Warning Dialog */}
+        {showHvWarning && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg shadow-xl p-6 max-w-sm">
+              <h3 className="text-lg font-semibold text-gray-800 mb-2">Warnung</h3>
+              <p className="text-gray-600 mb-4">HV ist noch an. Ist HV ausgeschaltet?</p>
+              <div className="flex gap-3 justify-end">
+                <button
+                  onClick={() => setShowHvWarning(false)}
+                  className="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded text-gray-700"
+                >
+                  Abbrechen
+                </button>
+                <button
+                  onClick={() => { setShowHvWarning(false); setShowMessungDialog(true); }}
+                  className="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded"
+                >
+                  Ja, fortfahren
                 </button>
               </div>
             </div>

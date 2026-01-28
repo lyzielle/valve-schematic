@@ -55,3 +55,22 @@
 [2026-01-28T21:35:10.446Z] Spektrometer: N2 befüllt
 [2026-01-28T21:35:11.949Z] Cryo: Zur Schleuse
 [2026-01-28T21:35:12.526Z] Cryo: Zum Spektrometer
+[2026-01-28T21:46:56.916Z] System: Schematic loaded
+[2026-01-28T21:47:09.037Z] System: Schematic loaded
+[2026-01-28T21:47:31.022Z] System: Schematic loaded
+[2026-01-28T21:47:43.219Z] System: Schematic loaded
+[2026-01-28T21:48:11.932Z] System: Schematic loaded
+[2026-01-28T21:48:58.630Z] TEC: ON (ON)
+[2026-01-28T21:49:05.051Z] TEC Max: 200 °C
+[2026-01-28T21:49:12.023Z] TEC Min: 200 °C
+[2026-01-28T21:51:22.186Z] System: Schematic loaded
+[2026-01-28T21:51:37.606Z] TEC Target Temp: 200 °C
+[2026-01-28T21:51:43.995Z] TEC: OFF (OFF)
+[2026-01-28T21:51:44.848Z] TEC: ON (ON)
+[2026-01-28T21:51:48.182Z] TEC Proximity: 0.5 °C
+[2026-01-28T21:52:00.231Z] TEC: OFF (OFF)
+[2026-01-28T21:52:02.248Z] TEC: ON (ON)
+[2026-01-28T21:52:08.960Z] TEC: OFF (OFF)
+[2026-01-28T21:54:18.245Z] System: Schematic loaded
+[2026-01-28T21:54:41.346Z] System: Schematic loaded
+[2026-01-28T21:55:21.864Z] System: Schematic loaded
