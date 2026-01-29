@@ -131,6 +131,8 @@ export default function Home() {
   const [showSchliffchenWarning, setShowSchliffchenWarning] = useState(false);
   const [showCryoWarning, setShowCryoWarning] = useState(false);
   const [showHvWarning, setShowHvWarning] = useState(false);
+  const [showCh1Warning, setShowCh1Warning] = useState(false);
+  const [pendingValve, setPendingValve] = useState<string | null>(null);
   const [messungCount, setMessungCount] = useState(0);
   const [messungDateiname, setMessungDateiname] = useState("");
   const [messungAmplitude, setMessungAmplitude] = useState("");
@@ -386,6 +388,14 @@ export default function Home() {
     const valve = ALL_VALVES.find((v) => v.id === valveId);
     if (!valve) return;
 
+    // Check if opening Argon, Krypton, or Neon valve while CH1 is open
+    const gasValves = ["Argon", "Krypton", "Neon"];
+    if (gasValves.includes(valveId) && !valveStates[valveId] && valveStates["CH1"]) {
+      setPendingValve(valveId);
+      setShowCh1Warning(true);
+      return;
+    }
+
     // Check if it's a 3-way valve - if so, toggle all 3-way valves together
     if (valve.type === "3-way") {
       const currentState = valveStates[valveId];
@@ -452,6 +462,19 @@ export default function Home() {
       addLog(gas, "Gas bottle opened", "OPEN");
     }
   }, [addLog]);
+
+  const executeValveOpen = useCallback((valveId: string) => {
+    setValveStates((prev) => ({ ...prev, [valveId]: true }));
+    addLog(`${valveId} Ventil`, "OPENED", "OPEN");
+  }, [addLog]);
+
+  const handleCh1Warning = (proceed: boolean) => {
+    setShowCh1Warning(false);
+    if (proceed && pendingValve) {
+      executeValveOpen(pendingValve);
+    }
+    setPendingValve(null);
+  };
 
   // Handle clicks on SVG using event delegation
   const handleSvgClick = useCallback((e: React.MouseEvent) => {
@@ -1300,7 +1323,7 @@ export default function Home() {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg shadow-xl p-6 max-w-sm">
               <h3 className="text-lg font-semibold text-gray-800 mb-2">Warnung</h3>
-              <p className="text-gray-600 mb-4">HV ist noch an. Ist HV ausgeschaltet?</p>
+              <p className="text-gray-600 mb-4">HV ist noch an</p>
               <div className="flex gap-3 justify-end">
                 <button
                   onClick={() => setShowHvWarning(false)}
@@ -1313,6 +1336,30 @@ export default function Home() {
                   className="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded"
                 >
                   Ja, fortfahren
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* CH1 Warning Dialog */}
+        {showCh1Warning && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg shadow-xl p-6 max-w-sm">
+              <h3 className="text-lg font-semibold text-gray-800 mb-2">Warnung</h3>
+              <p className="text-gray-600 mb-4">Überdruck Gefahr CH1?</p>
+              <div className="flex gap-3 justify-end">
+                <button
+                  onClick={() => handleCh1Warning(false)}
+                  className="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded text-gray-700"
+                >
+                  Abbrechen
+                </button>
+                <button
+                  onClick={() => handleCh1Warning(true)}
+                  className="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded"
+                >
+                  Fortfahren
                 </button>
               </div>
             </div>
